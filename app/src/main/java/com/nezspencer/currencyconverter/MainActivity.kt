@@ -1,6 +1,7 @@
 package com.nezspencer.currencyconverter
 
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -36,7 +37,16 @@ class MainActivity : DaggerAppCompatActivity() {
                     Toast.makeText(this, "app loading", Toast.LENGTH_SHORT).show()
                 }
                 Status.SUCCESS -> {
-                    ratesAdapter.submitList(it.data)
+                    it.data?.let { resultPair ->
+                        spinner_currency.adapter = ArrayAdapter<String>(
+                            this,
+                            R.layout.support_simple_spinner_dropdown_item,
+                            android.R.id.text1,
+                            resultPair.first
+                        )
+                        ratesAdapter.submitList(resultPair.second)
+                    }
+
                 }
                 Status.ERROR -> {
 

@@ -3,6 +3,7 @@ package com.nezspencer.currencyconverter
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import java.util.concurrent.TimeUnit
 
 fun <T> LiveData<T>.addOneShotResourceObserver(
     viewLifecycleOwner: LifecycleOwner? = null,
@@ -64,6 +65,8 @@ enum class Status {
 fun internal(block: () -> Unit) {
     if (BuildConfig.DEBUG) block()
 }
+
+val REFRESH_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(30)
 
 const val USD_NAME = "USD"
 const val USD_RATE: Double = 1.0

@@ -11,20 +11,27 @@ import kotlinx.android.synthetic.main.item_conversion_layout.view.*
 import java.text.NumberFormat
 
 class ConversionRatesAdapter : ListAdapter<ConversionRate, Holder>(ConversionRatesDiff()) {
+    private var conversionFactor: Double = 1.0
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder =
         Holder.inflate(parent)
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), conversionFactor)
+    }
+
+    fun updateConversionFactor(factor: Double) {
+        conversionFactor = factor
+        notifyDataSetChanged()
     }
 }
 
 class Holder private constructor(private val itemLayout: View) :
     RecyclerView.ViewHolder(itemLayout) {
-    fun bind(conversionRate: ConversionRate) {
+    fun bind(conversionRate: ConversionRate, conversionFactor: Double) {
         with(itemLayout) {
-            tv_currency_name.text = getCurrencyCode(conversionRate)
-            tv_amount.text = NumberFormat.getNumberInstance().format(conversionRate.rate)
+            tv_currency_name.text = conversionRate.label
+            tv_amount.text =
+                NumberFormat.getNumberInstance().format(conversionFactor * conversionRate.rate)
         }
     }
 

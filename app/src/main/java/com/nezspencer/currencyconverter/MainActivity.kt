@@ -1,12 +1,15 @@
 package com.nezspencer.currencyconverter
 
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
+import com.nezspencer.currencyconverter.network.ConversionRate
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -14,6 +17,10 @@ import javax.inject.Inject
 class MainActivity : DaggerAppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+    private val ratesList = mutableListOf<ConversionRate>()
+    private val currencies = mutableListOf<String>()
+    private var enteredAmount: Double = 1.0
+    private val currencyAdapter by lazy { ConversionRatesAdapter() }
 
     private val viewModel: MainViewModel by lazy {
         ViewModelProvider(
@@ -25,10 +32,29 @@ class MainActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val ratesAdapter = ConversionRatesAdapter()
-        rv_conversions.adapter = ratesAdapter
+        rv_conversions.adapter = currencyAdapter
         rv_conversions.addItemDecoration(DividerItemDecoration(this, GridLayoutManager.VERTICAL))
         rv_conversions.addItemDecoration(DividerItemDecoration(this, GridLayoutManager.HORIZONTAL))
+        spinner_currency.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val rateItem = ratesList.find { it.label == currencies[position] } ?: return
+                currencyAdapter.updateConversionFactor(
+                    viewModel.getConversionFactor(
+                        rateItem,
+                        enteredAmount
+                    )
+                )
+            }
+        }
         viewModel.getConversionRates()
         viewModel.conversionRatesLiveData.observe(this, Observer {
             when (it.status) {
@@ -44,7 +70,11 @@ class MainActivity : DaggerAppCompatActivity() {
                             android.R.id.text1,
                             resultPair.first
                         )
-                        ratesAdapter.submitList(resultPair.second)
+                        currencies.clear()
+                        currencies.addAll(resultPair.first)
+                        ratesList.clear()
+                        ratesList.addAll(resultPair.second)
+                        currencyAdapter.submitList(resultPair.second)
                     }
 
                 }

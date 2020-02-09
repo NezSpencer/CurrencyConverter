@@ -2,6 +2,8 @@ package com.nezspencer.currencyconverter.network
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
+import com.nezspencer.currencyconverter.USD_NAME
+import com.nezspencer.currencyconverter.USD_RATE
 import org.json.JSONObject
 import javax.inject.Inject
 
@@ -28,6 +30,10 @@ fun parseToConversionRate(apiResponse: String): Pair<List<String>, List<Conversi
     val keys = quotes.keys()
     val rateList = mutableListOf<ConversionRate>()
     val currencies = mutableListOf<String>()
+
+    // locally add USD and rate i.e 1 to the list
+    currencies.add(USD_NAME)
+    rateList.add(ConversionRate(USD_NAME, USD_RATE))
     while (keys.hasNext()) {
         val key = keys.next()
         currencies.add(key.replace("USD", ""))

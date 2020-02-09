@@ -3,7 +3,6 @@ package com.nezspencer.currencyconverter
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import com.nezspencer.currencyconverter.network.ConversionRate
 
 fun <T> LiveData<T>.addOneShotResourceObserver(
     viewLifecycleOwner: LifecycleOwner? = null,
@@ -66,4 +65,5 @@ fun internal(block: () -> Unit) {
     if (BuildConfig.DEBUG) block()
 }
 
-fun getCurrencyCode(conversionRate: ConversionRate) = conversionRate.label.replace("USD", "")
+const val USD_NAME = "USD"
+const val USD_RATE: Double = 1.0

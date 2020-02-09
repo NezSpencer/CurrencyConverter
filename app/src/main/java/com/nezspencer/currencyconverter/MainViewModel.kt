@@ -31,4 +31,9 @@ class MainViewModel @Inject constructor(private val converterRepository: Convert
                 }
         }
     }
+
+    fun getConversionFactor(conversionRate: ConversionRate, amount: Double): Double {
+        val unitCurrencyInDollars = (1 / conversionRate.rate)
+        return unitCurrencyInDollars * amount
+    }
 }

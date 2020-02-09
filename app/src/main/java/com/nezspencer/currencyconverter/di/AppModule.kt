@@ -1,6 +1,10 @@
 package com.nezspencer.currencyconverter.di
 
+import androidx.room.Room
 import com.nezspencer.currencyconverter.BuildConfig
+import com.nezspencer.currencyconverter.Config
+import com.nezspencer.currencyconverter.ConverterApp
+import com.nezspencer.currencyconverter.db.CurrencyConverterDb
 import com.nezspencer.currencyconverter.internal
 import com.nezspencer.currencyconverter.network.ConverterApi
 import com.nezspencer.currencyconverter.network.ConverterRepoImpl
@@ -50,7 +54,23 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideConverterRepository(converterApi: ConverterApi): ConverterRepository {
-        return ConverterRepoImpl(converterApi)
+    fun provideConverterRepository(
+        converterApi: ConverterApi,
+        db: CurrencyConverterDb,
+        config: Config
+    ): ConverterRepository {
+        return ConverterRepoImpl(converterApi, db, config)
     }
+
+    @Singleton
+    @Provides
+    fun provideConfig(app: ConverterApp) = Config(app)
+
+    @Provides
+    @Singleton
+    fun provideDb(app: ConverterApp): CurrencyConverterDb = Room.databaseBuilder(
+        app,
+        CurrencyConverterDb::class.java,
+        "converter-database"
+    ).fallbackToDestructiveMigration().build()
 }

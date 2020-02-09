@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -14,7 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "BASE_URL", "https://api.currencylayer.com/live")
+        buildConfigField("String", "BASE_URL", "\"http://api.currencylayer.com/\"")
         buildConfigField("String", "SERVER_KEY", currencyLayerApiKey)
     }
     buildTypes {
@@ -46,14 +47,12 @@ dependencies {
 
     //http
     implementation "com.squareup.retrofit2:retrofit: $version_retrofit"
-    implementation "com.squareup.retrofit2:converter-moshi:$version_retrofit"
-    //moshi
-    implementation "com.squareup.moshi:moshi:$version_moshi"
-    implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
+    implementation "com.squareup.retrofit2:converter-gson:$version_retrofit"
+    implementation "com.squareup.okhttp3:logging-interceptor:$version_http_logger"
+    implementation "com.squareup.retrofit2:converter-scalars:$version_retrofit"
     //coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version_kotlin_coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version_kotlin_coroutines"
-    implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$version_retrofit_coroutines_adapter"
     //image loading
     implementation "com.github.bumptech.glide:glide:$version_glide"
     //recyclerview
@@ -61,4 +60,11 @@ dependencies {
 
     //material-theming
     implementation "com.google.android.material:material:$version_material"
+
+    //dagger
+    api "com.google.dagger:dagger:$version_dagger"
+    kapt "com.google.dagger:dagger-compiler:$version_dagger"
+    api "com.google.dagger:dagger-android:$version_dagger"
+    api "com.google.dagger:dagger-android-support:$version_dagger"
+    kapt "com.google.dagger:dagger-android-processor:$version_dagger"
 }

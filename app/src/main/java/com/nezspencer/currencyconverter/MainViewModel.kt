@@ -11,8 +11,9 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(private val converterRepository: ConverterRepository) :
     ViewModel() {
-    private val _conversionRatesLiveData = MutableLiveData<Resource<List<ConversionRate>>>()
-    val conversionRatesLiveData: LiveData<Resource<List<ConversionRate>>>
+    private val _conversionRatesLiveData =
+        MutableLiveData<Resource<Pair<List<String>, List<ConversionRate>>>>()
+    val conversionRatesLiveData: LiveData<Resource<Pair<List<String>, List<ConversionRate>>>>
         get() = _conversionRatesLiveData
 
     fun getConversionRates() {

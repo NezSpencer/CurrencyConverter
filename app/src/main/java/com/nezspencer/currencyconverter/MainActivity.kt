@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.nezspencer.currencyconverter.network.ConversionRate
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -24,6 +25,9 @@ class MainActivity : DaggerAppCompatActivity() {
     private var enteredAmount: Double = 1.0
     private var selectedItem = ConversionRate(USD_NAME, USD_RATE)
     private val currencyAdapter by lazy { ConversionRatesAdapter() }
+    private val refreshListener = SwipeRefreshLayout.OnRefreshListener {
+        viewModel.getConversionRates()
+    }
 
     private val viewModel: MainViewModel by lazy {
         ViewModelProvider(
@@ -75,14 +79,13 @@ class MainActivity : DaggerAppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
-        viewModel.getConversionRates()
         viewModel.conversionRatesLiveData.observe(this, Observer {
             when (it.status) {
                 Status.LOADING -> {
-                    //show loading prompt
-                    Toast.makeText(this, "app loading", Toast.LENGTH_SHORT).show()
+                    refresh_handle.isRefreshing = true
                 }
                 Status.SUCCESS -> {
+                    refresh_handle.isRefreshing = false
                     it.data?.let { resultPair ->
                         spinner_currency.adapter = ArrayAdapter<String>(
                             this,
@@ -99,9 +102,13 @@ class MainActivity : DaggerAppCompatActivity() {
 
                 }
                 Status.ERROR -> {
-
+                    refresh_handle.isRefreshing = true
+                    Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
                 }
             }
         })
+
+        refresh_handle.setOnRefreshListener(refreshListener)
+        refreshListener.onRefresh()
     }
 }

@@ -53,7 +53,6 @@ class ConverterRepoImpl @Inject constructor(
             val currencies = rates.map { it.label }
             return@withContext Pair(currencies, rates)
         }
-
 }
 
 fun parseToConversionRate(apiResponse: String): Pair<List<String>, List<ConversionRate>> {

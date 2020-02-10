@@ -1,6 +1,8 @@
 package com.nezspencer.currencyconverter
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -20,6 +22,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private val ratesList = mutableListOf<ConversionRate>()
     private val currencies = mutableListOf<String>()
     private var enteredAmount: Double = 1.0
+    private var selectedItem = ConversionRate(USD_NAME, USD_RATE)
     private val currencyAdapter by lazy { ConversionRatesAdapter() }
 
     private val viewModel: MainViewModel by lazy {
@@ -46,15 +49,32 @@ class MainActivity : DaggerAppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
-                val rateItem = ratesList.find { it.label == currencies[position] } ?: return
+                selectedItem = ratesList.find { it.label == currencies[position] } ?: return
                 currencyAdapter.updateConversionFactor(
                     viewModel.getConversionFactor(
-                        rateItem,
+                        selectedItem,
                         enteredAmount
                     )
                 )
             }
         }
+        et_amount_input.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                val input = et_amount_input.text.toString().toDoubleOrNull()
+                input ?: return
+                enteredAmount = input
+                currencyAdapter.updateConversionFactor(
+                    viewModel.getConversionFactor(
+                        selectedItem,
+                        enteredAmount
+                    )
+                )
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
         viewModel.getConversionRates()
         viewModel.conversionRatesLiveData.observe(this, Observer {
             when (it.status) {

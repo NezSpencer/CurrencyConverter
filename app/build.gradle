@@ -64,6 +64,9 @@ dependencies {
     implementation "androidx.room:room-ktx:$version_room"
     kapt "androidx.room:room-compiler:$version_room"
 
+    //loading indicator - swipeRefresh
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
     //DI - dagger
     api "com.google.dagger:dagger:$version_dagger"
     kapt "com.google.dagger:dagger-compiler:$version_dagger"
